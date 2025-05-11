@@ -12,7 +12,7 @@ def main():
         repository=LocalRepository,
         factory=ExtractorFactory,
         strategy_mapping=STRATETEGY_EXTRACTION_MAPPING,
-        pool_size=4,
+        pool_size=SETTINGS["app"]["cores"],
     )
     facade.run()
 

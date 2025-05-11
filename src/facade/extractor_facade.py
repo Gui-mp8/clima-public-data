@@ -1,5 +1,8 @@
+#facade/extractor_facade.py
+
 from multiprocessing import Pool
 from typing import Callable
+
 from interfaces.repository_interface import RepositoryI
 from interfaces.factory_interface import FactoryI
 
@@ -10,7 +13,7 @@ class ExtractionFacade:
         repository: Callable[..., RepositoryI],
         factory: FactoryI,
         strategy_mapping: dict[str, type],
-        pool_size: int = 4,
+        pool_size: int,
     ):
         """
         :param app_settings:      Configurações de extração para cada site (de SETTINGS["app"])  
@@ -35,9 +38,11 @@ class ExtractionFacade:
         """
         extractors = []
         for site_name, site_conf in self.app_settings.items():
+            if not isinstance(site_conf, dict):
+                continue
+
             strat_conf = site_conf.get("strategy", {})
             repo_conf = site_conf.get("repository", {})
-
             # Cria repositório a partir dos parâmetros de repo_conf
             repository = self.repository(**repo_conf)
 

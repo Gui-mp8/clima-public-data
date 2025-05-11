@@ -1,5 +1,8 @@
+#config/settings.py
+
 SETTINGS: dict[str, type] = {
     "app":{
+        "cores": 4,
         "inmet": {
             "strategy": {
                 "cities": [
