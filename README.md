@@ -118,3 +118,83 @@ Isso resulta em um `main.py` praticamente vazio de lógica interna, com toda a c
    ```
 
 Pronto! A extração será disparada conforme as configurações em `config/settings.py` e os mapeamentos de estratégia.
+
+---
+
+## 7. Tutorial: Como Configurar uma Nova Strategy
+
+Para adicionar suporte a uma nova fonte de dados, siga os passos abaixo:
+
+1. **Criar a classe da Strategy**
+
+   * No diretório `src/strategies/extraction/`, crie um novo arquivo, por exemplo `my_source_extraction_strategy.py`.
+   * Implemente a interface `ExtractionSI` e defina o método `extract_data()` com a lógica específica:
+
+     ```python
+     from interfaces.extraction_strategy_interface import ExtractionSI
+     from interfaces.repository_interface import RepositoryI
+
+     class MySourceExtractionS(ExtractionSI):
+         def __init__(self, repository: RepositoryI, api_key: str, param_x: int):
+             self.repository = repository
+             self.api_key = api_key
+             self.param_x = param_x
+
+         def extract_data(self) -> None:
+             # ex: chamar API, processar resposta e salvar arquivos
+             data = fetch_from_api(self.api_key, self.param_x)
+             self.repository.save(data)
+     ```
+
+2. **Registrar a Strategy no mapeamento**
+
+   * Abra `src/config/mapping_strategy_extraction.py` e adicione sua nova classe ao dicionário:
+
+     ```python
+     from strategies.extraction.my_source_extraction_strategy import MySourceExtractionS
+
+     STRATETEGY_EXTRACTION_MAPPING = {
+         # já existentes...
+         "inmet": InmetExtractionS,
+
+         # novo mapeamento:
+         "my_source": MySourceExtractionS,
+     }
+     ```
+
+3. **Configurar o `SETTINGS`**
+
+   * No arquivo `src/config/settings.py`, adicione uma seção para seu `site_name` dentro de `SETTINGS["app"]`:
+
+     ```python
+     SETTINGS = {
+         "app": {
+             # existente...
+             "inmet": { ... },
+
+             # nova fonte:
+             "my_source": {
+                 "strategy": {
+                     "api_key": "SUA_CHAVE_AQUI",
+                     "param_x": 42,
+                 },
+                 "repository": {
+                     "path": "data/my_source",
+                 },
+             },
+         }
+     }
+     ```
+
+4. **Rodar a aplicação**
+
+   * Após essas configurações, basta executar:
+
+     ```bash
+     python src/main.py
+     ```
+   * A `ExtractionFacade` irá reconhecer automaticamente seu novo `"my_source"`, instanciar a `MySourceExtractionS` e executar o `extract_data()` em paralelo.
+
+---
+
+Agora sua aplicação suporta facilmente novas fontes, sem modificar o `main.py` ou as classes de fábrica/fachada.
