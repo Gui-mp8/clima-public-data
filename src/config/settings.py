@@ -5,6 +5,7 @@ SETTINGS: dict[str, type] = {
         "cores": 4,
         "inmet": {
             "strategy": {
+                "year": 2024,
                 "cities": [
                     "Barra do Ribeiro",
                     "Guaíba",
@@ -21,7 +22,8 @@ SETTINGS: dict[str, type] = {
                 # "years": range(2000, 2025+1),
             },
             "repository": {
-                "path": "data/inmet",
+                "year": 2024,
+                "path": "data/inmet/{year}",
             },
         }
     }

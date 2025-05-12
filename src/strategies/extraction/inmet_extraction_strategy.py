@@ -10,10 +10,11 @@ from interfaces.repository_interface import RepositoryI
 
 
 class InmetExtractionS(ExtractionSI):
-    def __init__(self, repository: RepositoryI, url: str, cities: list[str]):
+    def __init__(self, repository: RepositoryI, url: str, year: int, cities: list[str]):
         self.repository = repository
         self.url = url
         self.cities = cities
+        self.year = year
     """
     InmetExtractionS is a class that implements the ExtractionSI interface for extracting data from the INMET API.
     """
@@ -33,7 +34,7 @@ class InmetExtractionS(ExtractionSI):
         """
         Extracts data from the INMET SITE.
         """
-        url = self.url.format(year="2025")
+        url = self.url.format(year=self.year)
         
         zip_bytes = self._get_response(url)
 
